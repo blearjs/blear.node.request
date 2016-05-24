@@ -19,7 +19,7 @@ var FormData = request.FormData;
 describe('测试文件', function () {
     it('get nogzip', function (done) {
         var url = 'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=&json=1&p=3';
-    
+
         request({
             debug: true,
             url: url,
