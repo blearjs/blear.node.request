@@ -210,7 +210,7 @@ describe('测试文件', function () {
             contentType: 'image/png'
         });
 
-        var url = 'http://www.baidu.com/';
+        var url = 'https://www.baidu.com/';
         var req = request({
             debug: true,
             url: url,
