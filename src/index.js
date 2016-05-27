@@ -91,7 +91,7 @@ var Request = Stream.extend({
         the.id = random.guid();
         options = the._options = object.assign(true, {}, defaults, options);
         options.method = options.method.trim().toUpperCase();
-        options.url = url2.assignQuery(options.url, options.url.query);
+        options.url = url2.assignQuery(options.url, options.query);
         the._url = ur.parse(options.url);
         the._urlList = [options.url];
         the._urlMap = {};
