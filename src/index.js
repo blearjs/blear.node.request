@@ -117,6 +117,7 @@ var Request = Stream.extend({
         the.readable = true;
         the.writable = true;
         the._forms = [];
+        Request.parent(the);
         the._initEvent();
     },
 
