@@ -363,7 +363,7 @@ var Request = Stream.extend({
 
         the._buildRequestSend();
 
-        the.emit('request', req);
+        the.emit('request', requestOptions);
 
         req.on('response', function (res) {
             the.res = res;
@@ -373,7 +373,7 @@ var Request = Stream.extend({
             // 30x redirect
             if (res.statusCode >= 300 && res.statusCode < 400) {
                 var redirectURL = res.headers.location || the._url.href;
-                redirectURL = ur.resolve(the._url.href, redirectURL)
+                redirectURL = ur.resolve(the._url.href, redirectURL);
                 the._urlList.push(redirectURL);
                 the._urlMap[redirectURL] = the._urlMap[redirectURL] || 0;
                 the._urlMap[redirectURL]++;
@@ -415,6 +415,7 @@ var Request = Stream.extend({
                 the.req = null;
                 the.res = null;
                 the._stream = null;
+                the.emit('redirect', redirectURL);
                 the._request();
 
                 return;
