@@ -11,7 +11,7 @@ var fs = require('fs');
 var assert = require('assert');
 var path = require('path');
 var object = require('blear.utils.object');
-var expect = require('chai').expect;
+var expect = require('chai-jasmine').expect;
 
 var request = require('../src/index.js');
 var FormData = request.FormData;
@@ -263,7 +263,19 @@ describe('测试文件', function () {
             debug: true,
             browser: true
         }, function (err) {
-            expect(!!err).to.be.true;
+            expect(!!err).toBeTruthy();
+            done();
+        });
+    });
+
+    it('head', function (done) {
+        request.head('https://www.baidu.com', function (err, headers) {
+            if(err) {
+                console.log(err);
+                return done();
+            }
+
+            console.log(headers);
             done();
         });
     });

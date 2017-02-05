@@ -1,6 +1,6 @@
 {
   "name": "blear.node.request",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Node 端请求工具",
   "scripts": {
     "live": "browser-sync start --config bs-config.js",
@@ -60,7 +60,7 @@
   },
   "peerDependencies": {},
   "devDependencies": {
-    "chai": "^3.5.0",
+    "chai-jasmine": "^1.0.7",
     "istanbul": "^0.4.3",
     "mocha": "^2.4.5"
   },

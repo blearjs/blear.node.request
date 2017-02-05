@@ -128,6 +128,7 @@ var Request = Stream.extend({
      */
     _initEvent: function () {
         var the = this;
+        var options = the._options;
 
         the.on('newListener', function (et) {
             if (autoStartEventTypes[et]) {
@@ -142,9 +143,16 @@ var Request = Stream.extend({
                 the.on('error', function (err) {
                     the._callback.call(the, err);
                 });
-                the.on('body', function (body) {
-                    the._callback.call(the, null, body, the.res);
-                });
+
+                if (options.method === 'HEAD') {
+                    the.on('response', function (res) {
+                        the._callback.call(the, null, res.headers, res);
+                    });
+                } else {
+                    the.on('body', function (body) {
+                        the._callback.call(the, null, body, the.res);
+                    });
+                }
             });
         }
     },
@@ -743,6 +751,21 @@ request.defaults = defaults;
 request.Request = Request;
 request.FormData = FormData;
 
+
+/**
+ * head 请求
+ * @param url
+ * @param callback
+ * @returns {Request}
+ */
+request.head = function (url, callback) {
+    var options = {
+        url: url,
+        method: 'HEAD'
+    };
+
+    return new Request(options, callback);
+};
 
 /**
  * get 请求
