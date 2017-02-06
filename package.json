@@ -1,6 +1,6 @@
 {
   "name": "blear.node.request",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Node 端请求工具",
   "scripts": {
     "live": "browser-sync start --config bs-config.js",
@@ -56,7 +56,7 @@
     "blear.utils.typeis": "1.x",
     "blear.utils.uri": "1.x",
     "blear.utils.url": "1.x",
-    "form-data": "^1.0.0-rc4"
+    "form-data": "^2.1.2"
   },
   "peerDependencies": {},
   "devDependencies": {

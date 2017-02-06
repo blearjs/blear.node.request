@@ -243,22 +243,24 @@ var Request = Stream.extend({
         var the = this;
         var fd = new FormData();
 
-        collection.each(the._forms, function (index, item) {
+        collection.each(the._forms, function (index, com) {
             var args = [];
 
-            args[0] = item[0];
+            args[0] = com[0];
 
-            if (typeis.Function(item[1])) {
-                args[1] = item[1].call(the);
+            if (typeis.Function(com[1])) {
+                args[1] = com[1].call(the);
             } else {
-                args[1] = item[1];
+                args[1] = com[1];
             }
 
-            if (typeis.String(item[2])) {
+            if (typeis.String(com[2])) {
                 args[2] = {
-                    contentType: mime.get(path.extname(item[2])),
-                    filename: item[2]
+                    contentType: mime.get(path.extname(com[2])),
+                    filename: com[2]
                 };
+            } else {
+                args[2] = com[2];
             }
 
             fd.append.apply(fd, args);
