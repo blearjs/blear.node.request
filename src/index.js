@@ -76,6 +76,7 @@ var defaults = {
         referer: true,
         cookie: true
     },
+    httpsRejectUnauthorized: true,
     // 是否调试模式
     debug: false
 };
@@ -197,6 +198,7 @@ var Request = Stream.extend({
 
         ret.method = options.method;
         ret.url = the._url.href;
+        ret.rejectUnauthorized = options.httpsRejectUnauthorized;
         object.assign(ret, the._url);
 
         if (!isEmptyObject(options.browser)) {
