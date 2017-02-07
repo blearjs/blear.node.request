@@ -125,7 +125,7 @@ var Request = Stream.extend({
      * 获取请求 url 的列表
      * @returns {Array.<*>}
      */
-    getRequestURLList: function () {
+    getRequestedURLList: function () {
         return [].concat(this._urlList);
     },
 
