@@ -121,6 +121,13 @@ var Request = Stream.extend({
         the._initEvent();
     },
 
+    /**
+     * 获取请求 url 的列表
+     * @returns {Array.<*>}
+     */
+    getRequestURLList: function () {
+        return [].concat(this._urlList);
+    },
 
     /**
      * 初始化事件
