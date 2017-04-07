@@ -26,16 +26,15 @@ describe('测试文件', function () {
             query: {
                 _: 1
             }
-        }).on('error', function (err) {
-            console.log('\n\n-------------------------------------');
-            console.log('response error');
-            console.error(err);
-            done();
-        }).on('body', function (body) {
-            console.log('\n\n-------------------------------------');
-            console.log('response body');
-            console.log(body.slice(0, 200));
-            assert.equal(/baidu/.test(body), true);
+        }, function (err, body, res) {
+            console.log(err);
+            console.log(res.statusCode);
+            console.log(res.headers);
+
+            if (!err) {
+                expect(body).match(/window\.baidu/);
+            }
+
             done();
         });
     });
@@ -46,16 +45,15 @@ describe('测试文件', function () {
         request({
             debug: true,
             url: url
-        }).on('error', function (err) {
-            console.log('\n\n-------------------------------------');
-            console.log('response error');
-            console.error(err);
-            done();
-        }).on('body', function (body) {
-            console.log('\n\n-------------------------------------');
-            console.log('response body');
-            console.log(body.slice(0, 200));
-            assert.equal(/baidu/.test(body), true);
+        }, function (err, body, res) {
+            console.log(err);
+            console.log(res.statusCode);
+            console.log(res.headers);
+
+            if (!err) {
+                expect(body).match(/<!doctype\s+html/i);
+            }
+
             done();
         });
     });
@@ -66,16 +64,16 @@ describe('测试文件', function () {
         request({
             debug: true,
             url: url
-        }).on('error', function (err) {
-            console.log('\n\n-------------------------------------');
-            console.log('response error');
-            console.error(err);
-            done();
-        }).on('body', function (body) {
-            console.log('\n\n-------------------------------------');
-            console.log('response body');
-            console.log(body.slice(0, 200));
-            assert.equal(/baidu/.test(body), true);
+        }, function (err, body, res) {
+            console.log(err);
+            console.log(res.statusCode);
+            console.log(res.headers);
+
+            if (!err) {
+                expect(body).match(/<!doctype\s+html/i);
+                expect(this.requestedList.length > 1).toBe(true);
+            }
+
             done();
         });
     });
@@ -86,14 +84,16 @@ describe('测试文件', function () {
 
         request({
             url: url,
-            encoding: 'binary'
+            encoding: 'binary',
+            debug: true
         }).on('body', function (body) {
+            console.log('download body');
             fs.writeFileSync(file, body);
             done();
         }).on('error', function (err) {
             console.log('\n\n-------------------------------------');
             console.log('response error');
-            console.error(err);
+            console.error(err.stack);
             done();
         });
     });
@@ -167,7 +167,7 @@ describe('测试文件', function () {
         var file = path.join(__dirname, 'down.png');
 
         request.down(url, function (err, body) {
-            if(err){
+            if (err) {
                 return done();
             }
 
@@ -270,7 +270,7 @@ describe('测试文件', function () {
 
     it('head', function (done) {
         request.head('https://www.baidu.com', function (err, headers) {
-            if(err) {
+            if (err) {
                 console.log(err);
                 return done();
             }
