@@ -22,8 +22,15 @@ var Class = require('blear.classes.class');
 var pkg = require('../package.json');
 
 var defaults = {
-    query: {},
-    body: {},
+    // url 查询参数
+    query: null,
+    // application/json
+    body: null,
+    json: true,
+    // application/x-www-form-urlencoded
+    form: null,
+    // multipart/form-data
+    formData: null,
     headers: {},
     cookies: {},
     url: '/',
@@ -47,19 +54,21 @@ var defaults = {
         host: true,
         origin: true,
         // 经典错误，应为 referrer
-        referer: true
+        referer: true,
+        // 是否保持 cookie
+        cookie: true
     },
     // 是否严格 SSL
     strictSSL: false,
     // 是否调试模式
     debug: false
 };
-
 var Request = Class.ify(kernel.Request).extend({
     constructor: function (options) {
-        this.httpModules = {
-            'http:': overideHttpModule(this, http),
-            'https:': overideHttpModule(this, https)
+        var that = this;
+        that.httpModules = {
+            'http:': overideHttpModule(that, http),
+            'https:': overideHttpModule(that, https)
         };
 
         var requestedList = [];
@@ -70,7 +79,7 @@ var Request = Class.ify(kernel.Request).extend({
 
             console.log();
             console.log();
-            console.infoWithTime(console.pretty(method + ' ' + url, 'magenta'));
+            console.infoWithTime(method, url);
         };
         var debugInfo = function (event, val) {
             if (!options.debug) {
@@ -80,55 +89,68 @@ var Request = Class.ify(kernel.Request).extend({
             debug.info(event, val);
         };
 
-        this.on('beforeRequest', function () {
+        that.on('beforeRequest', function (req) {
             if (!typeis.Object(options.browser)) {
                 return;
             }
 
             if (options.browser.host === true) {
-                this.setHeader('host', this.uri.host);
+                that.setHeader('host', that.uri.host);
             } else if (typeis.String(options.browser.host)) {
-                this.setHeader('host', options.browser.host);
+                that.setHeader('host', options.browser.host);
             }
 
             if (options.browser.origin === true) {
-                this.setHeader('origin', this.uri.protocol + '//' + this.uri.host);
+                that.setHeader('origin', that.uri.protocol + '//' + that.uri.host);
             } else if (typeis.String(options.browser.origin)) {
-                this.setHeader('origin', options.browser.origin);
+                that.setHeader('origin', options.browser.origin);
             }
 
             if (options.browser.referer === true) {
-                this.setHeader('referer', this.uri.href);
+                that.setHeader('referer', that.uri.href);
             } else if (typeis.String(options.browser.referer)) {
-                this.setHeader('referer', options.browser.referer);
+                that.setHeader('referer', options.browser.referer);
+            }
+
+            req.on('response', function (res) {
+                debugHead(that.method, that.href);
+                debugInfo('response statusCode', res.statusCode);
+                debugInfo('response headers', res.headers);
+            });
+        });
+
+        that.on('request', function (req) {
+            requestedList.push(that.href);
+            debugHead(that.method, that.href);
+            debugInfo('request headers', req._headers);
+            debugInfo('request query', options.query);
+
+            if (options.body) {
+                debugInfo('request body', options.body);
+            }
+
+            if (options.form) {
+                debugInfo('request form', options.form);
+            }
+
+            if (options.formData) {
+                debugInfo('request form', options.formData);
             }
         });
 
-        this.on('request', function (req) {
-            requestedList.push(this.href);
-            debugHead(this.method, this.href);
-            debugInfo('request headers', req._headers);
-            debugInfo('request query', options.query);
-            debugInfo('request body', options.body);
-        });
-
-        this.on('error', function (error) {
-            debugHead(this.method, this.href);
+        that.on('error', function (error) {
+            debugHead(that.method, that.href);
             debugInfo('request error', error);
         });
 
-        this.on('response', function (res) {
-            debugHead(this.method, this.href);
-            debugInfo('response statusCode', res.statusCode);
-            debugInfo('response headers', res.headers);
-        });
-
-        this.on('body', function (body) {
+        that.on('complete', function (res, body) {
             debugInfo('response body', body);
         });
 
-        this.requestedList = requestedList;
-        Request.parent(this, options);
+        // 支持 gzip
+        that.gzip = true;
+        that.requestedList = requestedList;
+        Request.parent(that, options);
     }
 });
 
@@ -146,10 +168,19 @@ function request(options, callback) {
             'user-agent': options.browser['user-agent'],
             'cache-control': options.browser['cache-control']
         }, options.headers);
+
+        if (options.browser.cookie) {
+            options.jar = true;
+        }
     }
 
-    options.json = options.body;
-    options.body = null;
+    if (typeis.Object(options.cookies)) {
+        object.assign(options.headers.cookies, options.cookies);
+    }
+
+    if (options.form !== null || options.formData !== null || options.body === null) {
+        options.json = false;
+    }
 
     if (options.encoding === 'binary') {
         options.encoding = null;
@@ -167,8 +198,12 @@ function request(options, callback) {
 
     if (typeis.Function(response)) {
         options.callback = function (err, res, body) {
-            this.emit('body', body);
-            response.call(this, err, body, res);
+            response.call(
+                this,
+                err,
+                options.method === 'HEAD' ? res.headers : body,
+                res
+            );
         };
     }
 
@@ -176,16 +211,51 @@ function request(options, callback) {
 }
 
 request.defaults = defaults;
+request.head = buildExports('HEAD');
+request.get = buildExports('GET');
+request.post = buildExports('POST');
+request.put = buildExports('PUT');
+request.delete = buildExports('DELETE');
+request.down = buildExports('GET', {
+    encoding: null
+});
 module.exports = request;
 
 // =================================================
+/**
+ * 重写 http 模式，以便在请求过程中监视
+ * @param client
+ * @param original
+ */
 function overideHttpModule(client, original) {
     var overided = object.assign({}, original);
+    var originalRequest = original.request;
 
     overided.request = function (options, cb) {
-        client.emit('beforeRequest');
-        return new original.ClientRequest(options, cb);
+        var req = originalRequest(options, cb);
+        client.emit('beforeRequest', req);
+        return req;
     };
 
     return overided;
+}
+
+/**
+ * 构建出口函数
+ * @param method
+ * @param [extra]
+ * @returns {Function}
+ */
+function buildExports(method, extra) {
+    return function (options, callback) {
+        if (typeis.String(options)) {
+            options = {
+                url: options
+            };
+        }
+
+        options.method = method;
+        object.assign(options, extra);
+        return request(options, callback);
+    };
 }

@@ -86,14 +86,13 @@ describe('测试文件', function () {
             url: url,
             encoding: 'binary',
             debug: true
-        }).on('body', function (body) {
-            console.log('download body');
+        }, function (err, body) {
+            if(err) {
+                done();
+                return;
+            }
+
             fs.writeFileSync(file, body);
-            done();
-        }).on('error', function (err) {
-            console.log('\n\n-------------------------------------');
-            console.log('response error');
-            console.error(err.stack);
             done();
         });
     });
@@ -103,24 +102,14 @@ describe('测试文件', function () {
 
         var req = request({
             debug: true,
-            url: url,
-            cookies: {
-                _tb_token_: '9JGzuptnBbCf',
-                cookie2: '7dfb3f2bfda25390e64dc59867ae0bf2',
-                t: '8e804a3b6310a204c90c8998ed1f3bf3'
+            url: url
+        }, function (err, body) {
+            if (err) {
+                done();
+                return;
             }
-        }).on('error', function (err) {
-            console.log('\n\n-------------------------------------');
-            console.log('response error');
-            console.error(err);
-            done();
-        }).on('body', function (body) {
-            console.log('\n\n-------------------------------------');
-            console.log('response body');
-            console.log(req.getRedirectHistory());
-            console.log(req.getCookies());
-            console.log(body.slice(0, 200));
-            assert.equal(/tmall/.test(body), true);
+
+            expect(body).match(/tmall/i);
             done();
         });
     });
@@ -132,12 +121,7 @@ describe('测试文件', function () {
             debug: true,
             url: url,
             browser: false
-        }).on('response', function (res) {
-            done();
-        }).on('error', function (err) {
-            console.log('\n\n-------------------------------------');
-            console.log('response error');
-            console.error(err);
+        }, function (err, body) {
             done();
         });
     });
@@ -148,7 +132,8 @@ describe('测试文件', function () {
 
         request({
             url: url,
-            debug: true
+            debug: true,
+            encoding: null
         }).on('error', function (err) {
             console.log('\n\n-------------------------------------');
             console.log('response error');
@@ -178,47 +163,36 @@ describe('测试文件', function () {
 
     it('pipe from 1', function (done) {
         var file = path.join(__dirname, 'image.png');
-        var url = 'http://baidu.com/';
+        var url = 'https://www.baidu.com/';
         var req = request({
             debug: true,
             url: url,
-            method: 'post'
-        });
-
-        req.formData('user', 'cloudcome');
-        req.formData('file', function () {
-            return fs.createReadStream(file);
-        }, 'image.png');
-
-        req.on('body', function (body) {
-            console.log(body);
-            done();
-        }).on('error', function (err) {
-            console.log('\n\n-------------------------------------');
-            console.log('response error');
-            console.error(err);
+            method: 'post',
+            formData: {
+                user: 'cloudcome',
+                file: {
+                    value: fs.createReadStream(file),
+                    options: {
+                        filename: 'image.png'
+                    }
+                }
+            }
+        }, function () {
             done();
         });
     });
 
     it('pipe from 2', function (done) {
         var file = path.join(__dirname, 'image.png');
-        var fd = new FormData();
-
-        fd.append('user', 'cloudcome');
-        fd.append('file', fs.createReadStream(file), {
-            contentType: 'image/png'
-        });
-
+        var rs = fs.createReadStream(file);
         var url = 'https://www.baidu.com/';
         var req = request({
             debug: true,
             url: url,
-            method: 'post',
-            headers: fd.getHeaders({})
+            method: 'post'
         });
 
-        fd.pipe(req).on('error', function (err) {
+        rs.pipe(req).on('error', function (err) {
             console.log('\n\n-------------------------------------');
             console.log('response error');
             console.error(err);
@@ -231,8 +205,12 @@ describe('测试文件', function () {
     it('post body', function (done) {
         var url = 'http://tieba.baidu.com/f/commit/post/add';
 
-        request.post(url, {
-            content: 1
+        request.post({
+            debug: true,
+            url: url,
+            body: {
+                content: 1
+            }
         }, done);
     });
 
@@ -251,7 +229,7 @@ describe('测试文件', function () {
             console.log('\n\n-------------------------------------');
             console.log('response body');
             console.log(body.slice(0, 200));
-            assert.equal(/tmall/.test(body), true);
+            expect(body).match(/tmall/i);
             done();
         });
     });
@@ -269,13 +247,14 @@ describe('测试文件', function () {
     });
 
     it('head', function (done) {
-        request.head('https://www.baidu.com', function (err, headers) {
+        request.head('https://www.baidu.com', function (err, headers, res) {
             if (err) {
                 console.log(err);
                 return done();
             }
 
             console.log(headers);
+            // console.log(res.headers);
             done();
         });
     });
