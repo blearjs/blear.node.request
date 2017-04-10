@@ -147,20 +147,6 @@ describe('测试文件', function () {
         });
     });
 
-    it('down', function (done) {
-        var url = 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png';
-        var file = path.join(__dirname, 'down.png');
-
-        request.down(url, function (err, body) {
-            if (err) {
-                return done();
-            }
-
-            fs.writeFileSync(file, body);
-            done();
-        });
-    });
-
     it('pipe from 1', function (done) {
         var file = path.join(__dirname, 'image.png');
         var url = 'https://www.baidu.com/';

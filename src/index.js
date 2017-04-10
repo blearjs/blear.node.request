@@ -144,6 +144,7 @@ var Request = Class.ify(kernel.Request).extend({
         });
 
         that.on('complete', function (res, body) {
+            debugHead(that.method, that.href);
             debugInfo('response body', body);
         });
 
@@ -216,9 +217,6 @@ request.get = buildExports('GET');
 request.post = buildExports('POST');
 request.put = buildExports('PUT');
 request.delete = buildExports('DELETE');
-request.down = buildExports('GET', {
-    encoding: null
-});
 module.exports = request;
 
 // =================================================
