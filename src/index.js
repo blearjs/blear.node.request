@@ -202,7 +202,7 @@ function request(options, callback) {
             response.call(
                 this,
                 err,
-                options.method === 'HEAD' ? res.headers : body,
+                options.method === 'HEAD' ? res && res.headers : body,
                 res
             );
         };
