@@ -160,6 +160,7 @@ function request(options, callback) {
 
     options = object.assign({}, defaults, options);
     options.method = options.method.toUpperCase();
+    options.qs = options.query;
 
     if (typeis.Object(options.browser)) {
         options.headers = object.assign({}, {
