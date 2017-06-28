@@ -180,10 +180,12 @@ function request(options, callback) {
     }
 
     options.json = false;
-    try {
-        options.body = JSON.stringify(options.body);
-    } catch (err) {
-        // ignore
+    if (typeis.Object(options.body)) {
+        try {
+            options.body = JSON.stringify(options.body);
+        } catch (err) {
+            // ignore
+        }
     }
 
     if (options.encoding === 'binary') {

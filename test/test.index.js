@@ -12,6 +12,7 @@ var assert = require('assert');
 var path = require('path');
 var object = require('blear.utils.object');
 var expect = require('chai-jasmine').expect;
+var console = require('blear.node.console');
 
 var request = require('../src/index.js');
 var FormData = request.FormData;
@@ -173,7 +174,7 @@ describe('测试文件', function () {
         var rs = fs.createReadStream(file);
         var url = 'https://www.baidu.com/';
         var req = request({
-            debug: true,
+            debug: false,
             url: url,
             method: 'post'
         });
