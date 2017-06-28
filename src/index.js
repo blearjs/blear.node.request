@@ -26,7 +26,6 @@ var defaults = {
     query: null,
     // application/json
     body: null,
-    json: true,
     // application/x-www-form-urlencoded
     form: null,
     // multipart/form-data
@@ -180,8 +179,11 @@ function request(options, callback) {
         object.assign(options.headers.cookies, options.cookies);
     }
 
-    if (options.form !== null || options.formData !== null || options.body === null) {
-        options.json = false;
+    options.json = false;
+    try {
+        options.body = JSON.stringify(options.body);
+    } catch (err) {
+        // ignore
     }
 
     if (options.encoding === 'binary') {
