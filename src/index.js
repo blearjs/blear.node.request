@@ -205,9 +205,32 @@ function request(options, callback) {
 
     if (typeis.Function(response)) {
         options.callback = function (err, res, body) {
+            if (err) {
+                return response.call(this, err);
+            }
+
+            var headers = res.headers;
+            res.cookies = headers['set-cookie'].map(function (val) {
+                var o = {};
+                val.split(/;\s+/).forEach(function (slice, index) {
+                    var group = slice.split('=');
+                    var key = decodeURIComponent(group[0]);
+                    var val = decodeURIComponent(group[1] || '');
+
+                    // desc
+                    if (index) {
+                        o[key.toLowerCase()] = val;
+                    } else {
+                        o.key = key;
+                        o.val = val;
+                    }
+                });
+                return o;
+            });
+
             response.call(
                 this,
-                err,
+                null,
                 options.method === 'HEAD' ? res && res.headers : body,
                 res
             );
