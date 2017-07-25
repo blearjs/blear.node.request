@@ -169,14 +169,15 @@ function request(options, callback) {
             'user-agent': options.browser['user-agent'],
             'cache-control': options.browser['cache-control']
         }, options.headers);
-
-        if (options.browser.cookie) {
-            options.jar = true;
-        }
     }
 
     if (typeis.Object(options.cookies)) {
-        object.assign(options.headers.cookies, options.cookies);
+        options.headers.cookie = options.headers.cookie || '';
+        var cookies = [];
+        object.each(options.cookies, function (key, val) {
+            cookies.push(encodeURIComponent(key) + '=' + encodeURIComponent(val));
+        });
+        options.headers.cookie += cookies.join(';');
     }
 
     options.json = false;
