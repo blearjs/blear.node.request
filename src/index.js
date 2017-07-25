@@ -210,7 +210,7 @@ function request(options, callback) {
             }
 
             var headers = res.headers;
-            res.cookies = headers['set-cookie'].map(function (val) {
+            res.cookies = (headers['set-cookie'] || []).map(function (val) {
                 var o = {};
                 val.split(/;\s+/).forEach(function (slice, index) {
                     var group = slice.split('=');
