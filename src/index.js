@@ -110,12 +110,6 @@ var Request = Class.ify(kernel.Request).extend({
             } else if (typeis.String(options.browser.referer)) {
                 that.setHeader('referer', options.browser.referer);
             }
-
-            req.on('response', function (res) {
-                debugHead(that.method, that.href);
-                debugInfo('response statusCode', res.statusCode);
-                debugInfo('response headers', res.headers);
-            });
         });
 
         that.on('request', function (req) {
@@ -140,6 +134,12 @@ var Request = Class.ify(kernel.Request).extend({
         that.on('error', function (error) {
             debugHead(that.method, that.href);
             debugInfo('request error', error);
+        });
+
+        that.on('response', function (res) {
+            debugHead(that.method, that.href);
+            debugInfo('response statusCode', res.statusCode);
+            debugInfo('response headers', res.headers);
         });
 
         that.on('complete', function (res, body) {
