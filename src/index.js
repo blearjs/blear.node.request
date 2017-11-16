@@ -64,10 +64,10 @@ var defaults = {
 };
 var Request = Class.ify(kernel.Request).extend({
     constructor: function (options) {
-        var that = this;
-        that.httpModules = {
-            'http:': overideHttpModule(that, http),
-            'https:': overideHttpModule(that, https)
+        var the = this;
+        the.httpModules = {
+            'http:': overideHttpModule(the, http),
+            'https:': overideHttpModule(the, https)
         };
 
         var requestedList = [];
@@ -88,33 +88,33 @@ var Request = Class.ify(kernel.Request).extend({
             debug.info(event, val);
         };
 
-        that.on('beforeRequest', function (req) {
+        the.on('beforeRequest', function (req) {
             if (!typeis.Object(options.browser)) {
                 return;
             }
 
             if (options.browser.host === true) {
-                that.setHeader('host', that.uri.host);
+                the.setHeader('host', the.uri.host);
             } else if (typeis.String(options.browser.host)) {
-                that.setHeader('host', options.browser.host);
+                the.setHeader('host', options.browser.host);
             }
 
             if (options.browser.origin === true) {
-                that.setHeader('origin', that.uri.protocol + '//' + that.uri.host);
+                the.setHeader('origin', the.uri.protocol + '//' + the.uri.host);
             } else if (typeis.String(options.browser.origin)) {
-                that.setHeader('origin', options.browser.origin);
+                the.setHeader('origin', options.browser.origin);
             }
 
             if (options.browser.referer === true) {
-                that.setHeader('referer', that.uri.href);
+                the.setHeader('referer', the.uri.href);
             } else if (typeis.String(options.browser.referer)) {
-                that.setHeader('referer', options.browser.referer);
+                the.setHeader('referer', options.browser.referer);
             }
         });
 
-        that.on('request', function (req) {
-            requestedList.push(that.href);
-            debugHead(that.method, that.href);
+        the.on('request', function (req) {
+            requestedList.push(the.href);
+            debugHead(the.method, the.href);
             debugInfo('request headers', req._headers);
             debugInfo('request query', options.query);
 
@@ -131,26 +131,31 @@ var Request = Class.ify(kernel.Request).extend({
             }
         });
 
-        that.on('error', function (error) {
-            debugHead(that.method, that.href);
+        the.on('error', function (error) {
+            debugHead(the.method, the.href);
             debugInfo('request error', error);
         });
 
-        that.on('response', function (res) {
-            debugHead(that.method, that.href);
+        the.on('response', function (res) {
+            debugHead(the.method, the.href);
             debugInfo('response statusCode', res.statusCode);
             debugInfo('response headers', res.headers);
         });
 
-        that.on('complete', function (res, body) {
-            debugHead(that.method, that.href);
+        the.on('complete', function (res, body) {
+            debugHead(the.method, the.href);
             debugInfo('response body', body);
         });
 
         // 支持 gzip
-        that.gzip = true;
-        that.requestedList = requestedList;
-        Request.parent(that, options);
+        the.gzip = true;
+        the.href = requestedList[requestedList.length - 1];
+        the.requestedList = requestedList;
+        // useQuerystring - if true, use querystring to stringify and parse querystrings,
+        // otherwise use qs (default: false). Set this option to true if you need arrays to be serialized as
+        // foo=bar&foo=baz instead of the default foo[0]=bar&foo[1]=baz.
+        options.useQuerystring = true;
+        Request.parent(the, options);
     }
 });
 

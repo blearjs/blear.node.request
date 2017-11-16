@@ -18,6 +18,20 @@ var request = require('../src/index.js');
 var FormData = request.FormData;
 
 describe('测试文件', function () {
+    it('querystring array', function (done) {
+        request({
+            debug: false,
+            url: 'https://www.baidu.com',
+            query: {
+                a: [1, 2, 3]
+            }
+        }, function () {
+            console.log(this.href);
+            expect(this.href).toMatch(/\?a=1&a=2&a=3$/);
+            done();
+        });
+    });
+
     it('get nogzip', function (done) {
         var url = 'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=&json=1&p=3';
 
@@ -88,7 +102,7 @@ describe('测试文件', function () {
             encoding: 'binary',
             debug: true
         }, function (err, body) {
-            if(err) {
+            if (err) {
                 done();
                 return;
             }
