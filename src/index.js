@@ -115,7 +115,7 @@ var Request = Class.ify(kernel.Request).extend({
         the.on('request', function (req) {
             requestedList.push(the.href);
             debugHead(the.method, the.href);
-            debugInfo('request headers', req._headers);
+            debugInfo('request headers', the.headers);
             debugInfo('request query', options.query);
 
             if (options.body) {
