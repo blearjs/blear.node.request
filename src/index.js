@@ -264,9 +264,8 @@ function overideHttpModule(client, original) {
     var originalRequest = original.request;
 
     overided.request = function (options, cb) {
-        var req = originalRequest(options, cb);
-        client.emit('beforeRequest', req);
-        return req;
+        client.emit('beforeRequest');
+        return originalRequest(options, cb);
     };
 
     return overided;
