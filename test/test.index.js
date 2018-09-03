@@ -209,7 +209,7 @@ describe('测试文件', function () {
         request.post({
             debug: true,
             url: url,
-            body: {
+            json: {
                 content: 1
             }
         }, done);
