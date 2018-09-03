@@ -24,8 +24,10 @@ var pkg = require('../package.json');
 var defaults = {
     // url 查询参数
     query: null,
-    // application/json
+    // string
     body: null,
+    // application/json
+    json: null,
     // application/x-www-form-urlencoded
     form: null,
     // multipart/form-data
@@ -47,8 +49,8 @@ var defaults = {
         'accept-encoding': 'gzip',
         'accept-language': 'zh-CN,zh;q=0.8,en;q=0.6',
         'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 7_0 like Mac OS X; en-us) ' +
-        'AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53 ' +
-        pkg.name + '/' + pkg.version,
+            'AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53 ' +
+            pkg.name + '/' + pkg.version,
         'cache-control': 'no-cache',
         host: true,
         origin: true,
@@ -185,13 +187,9 @@ function request(options, callback) {
         options.headers.cookie += cookies.join(';');
     }
 
-    options.json = false;
-    if (typeis.Object(options.body)) {
-        try {
-            options.body = JSON.stringify(options.body);
-        } catch (err) {
-            // ignore
-        }
+    if (typeis.Object(options.json)) {
+        options.body = options.json;
+        options.json = true;
     }
 
     if (options.encoding === 'binary') {
