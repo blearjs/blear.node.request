@@ -45,7 +45,7 @@
     "blear.utils.function": "^1.0.5",
     "blear.utils.object": "^1.0.14",
     "blear.utils.typeis": "^1.0.3",
-    "request": "2.81.0"
+    "request": "^2.88.0"
   },
   "peerDependencies": {},
   "devDependencies": {
