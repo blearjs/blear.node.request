@@ -188,10 +188,14 @@ function request(options, callback) {
     }
 
     if (typeis.Object(options.json)) {
-        options.body = options.json;
-        options.json = true;
+        options.body = JSON.stringify(options.json);
+    }
+    // compact
+    else if (typeis.Object(options.body)) {
+        options.body = JSON.stringify(options.json);
     }
 
+    options.json = false;
     if (options.encoding === 'binary') {
         options.encoding = null;
         options.callback = fun.ensure(callback);
