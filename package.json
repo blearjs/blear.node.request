@@ -1,6 +1,6 @@
 {
   "name": "blear.node.request",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Node 端请求工具",
   "scripts": {
     "live": "browser-sync start --config bs-config.js",

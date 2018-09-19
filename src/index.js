@@ -192,7 +192,7 @@ function request(options, callback) {
     }
     // compact
     else if (typeis.Object(options.body)) {
-        options.body = JSON.stringify(options.json);
+        options.body = JSON.stringify(options.body);
     }
 
     options.json = false;
