@@ -35,6 +35,7 @@ var defaults = {
     headers: {},
     cookies: {},
     url: '/',
+    proxy: null,
     // 请求方法
     method: 'get',
     // 响应编码
