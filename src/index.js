@@ -1,8 +1,8 @@
 /**
- * 文件描述
+ * request main
  * @author ydr.me
  * @create 2017-04-07 16:24
- * @update 2017-04-07 16:24
+ * @update 2018年09月30日09:22:59
  */
 
 
@@ -177,6 +177,7 @@ function request(options, callback) {
         maxRedirects: options.maxRedirects,
         timeout: options.timeout,
         strictSSL: options.strictSSL,
+        callback: options.callback,
         // if true, add an Accept-Encoding header to request compressed content encodings
         // from the server (if not already present) and decode supported content encodings
         // in the response. Note: Automatic decoding of the response content is performed
@@ -192,33 +193,4 @@ function request(options, callback) {
 }
 
 request.defaults = defaults;
-request.head = buildExports('HEAD');
-request.get = buildExports('GET');
-request.post = buildExports('POST');
-request.put = buildExports('PUT');
-request.delete = buildExports('DELETE');
 module.exports = request;
-
-// =================================================
-// =================================================
-// =================================================
-
-/**
- * 构建出口函数
- * @param method
- * @param [extra]
- * @returns {Function}
- */
-function buildExports(method, extra) {
-    return function (options, callback) {
-        if (typeis.String(options)) {
-            options = {
-                url: options
-            };
-        }
-
-        options.method = method;
-        object.assign(options, extra);
-        return request(options, callback);
-    };
-}

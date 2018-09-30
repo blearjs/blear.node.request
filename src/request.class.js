@@ -1,5 +1,5 @@
 /**
- * 文件描述
+ * request class
  * @author ydr.me
  * @create 2018-09-30 08:28
  * @update 2018-09-30 08:28
