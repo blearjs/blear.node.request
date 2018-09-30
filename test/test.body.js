@@ -122,6 +122,64 @@ describe('body', function () {
         });
     });
 
+    it('text', function (done) {
+        server(done, function (app, stop) {
+
+            app.post('/', function (req, res) {
+                expect(req.headers['content-type']).toEqual('application/json');
+                expect(req.body.a).toEqual(1);
+                expect(req.body.b).toEqual('2');
+                res.send('ok');
+            });
+
+            var json = {
+                a: 1,
+                b: '2'
+            };
+            request({
+                url: app.$remote('/'),
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(json),
+                method: 'post'
+            }, function (err, body) {
+                expect(body).toEqual('ok');
+                stop();
+            });
+
+        });
+    });
+
+    it('object', function (done) {
+        server(done, function (app, stop) {
+
+            app.post('/', function (req, res) {
+                expect(req.headers['content-type']).toEqual('application/json');
+                expect(req.body.a).toEqual(1);
+                expect(req.body.b).toEqual('2');
+                res.send('ok');
+            });
+
+            var json = {
+                a: 1,
+                b: '2'
+            };
+            request({
+                url: app.$remote('/'),
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: json,
+                method: 'post'
+            }, function (err, body) {
+                expect(body).toEqual('ok');
+                stop();
+            });
+
+        });
+    });
+
 });
 
 
