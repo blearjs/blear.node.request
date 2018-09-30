@@ -15,7 +15,8 @@ describe('cookies', function () {
         server(done, function (app, stop) {
 
             app.get('/', function (req, res) {
-                res.send(req.headers.cookie);
+                expect(req.headers.cookie).toEqual('a=1');
+                res.send('ok');
             });
 
             var cookies = {
@@ -26,7 +27,7 @@ describe('cookies', function () {
                 url: app.$remote('/'),
                 cookies: cookies
             }, function (err, body) {
-                expect(body).toEqual('a=1');
+                expect(body).toEqual('ok');
                 stop();
             });
 
