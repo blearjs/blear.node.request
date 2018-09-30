@@ -11,7 +11,7 @@ var request = require('../src/index');
 
 describe('cookies', function () {
 
-    it('main', function (done) {
+    it('get', function (done) {
         server(done, function (app, stop) {
 
             app.get('/', function (req, res) {
@@ -27,6 +27,33 @@ describe('cookies', function () {
                 cookies: cookies
             }, function (err, body) {
                 expect(body).toEqual('a=1');
+                stop();
+            });
+
+        });
+    });
+
+    it('set', function (done) {
+        server(done, function (app, stop) {
+
+            app.get('/', function (req, res) {
+                res.cookie('b', 2);
+                res.send(req.headers.cookie);
+            });
+
+            var cookies = {
+                a: 1
+            };
+
+            request({
+                url: app.$remote('/'),
+                cookies: cookies
+            }, function (err, body, res) {
+                expect(body).toEqual('a=1');
+                expect(res.cookies.length).toBe(1);
+                expect(res.cookies[0].key).toBe('b');
+                expect(res.cookies[0].val).toBe('2');
+                expect(res.cookies[0].path).toBe('/');
                 stop();
             });
 
