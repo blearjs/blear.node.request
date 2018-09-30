@@ -89,15 +89,13 @@ function request(options, callback) {
     var json = options.json;
     var body = options.body;
 
-    options.json = false;
     if (typeis.Object(json)) {
-        options.body = json;
-        options.json = true;
+        options.body = JSON.stringify(json);
+        options.headers['content-type'] = 'application/json';
     }
     // compact
     else if (typeis.Object(body)) {
-        options.body = JSON.stringify(options.body);
-        options.json = true;
+        options.body = JSON.stringify(body);
     }
 
     if (options.encoding === 'binary') {
@@ -156,8 +154,10 @@ function request(options, callback) {
         // otherwise use qs (default: false). Set this option to true if you need arrays to be serialized as
         // foo=bar&foo=baz instead of the default foo[0]=bar&foo[1]=baz.
         useQuerystring: true,
+        // sets body to JSON representation of value and adds Content-type: application/json header.
+        // Additionally, parses the response body as JSON.
+        json: false,
         body: options.body,
-        json: options.json,
         form: options.form,
         formData: options.formData,
         headers: options.headers,

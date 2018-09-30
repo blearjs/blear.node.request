@@ -14,12 +14,12 @@ describe('basic', function () {
     it('main', function (done) {
         server(done, function (app, stop) {
 
-            app.get('/basic', function (req, res) {
+            app.get('/', function (req, res) {
                 res.send('ok');
             });
 
             request({
-                url: app.$remote('/basic')
+                url: app.$remote('/')
             }, function (err, body) {
                 expect(body).toEqual('ok');
                 stop();

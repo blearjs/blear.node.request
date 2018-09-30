@@ -14,7 +14,7 @@ describe('cookies', function () {
     it('main', function (done) {
         server(done, function (app, stop) {
 
-            app.get('/cookies', function (req, res) {
+            app.get('/', function (req, res) {
                 res.send(req.headers.cookie);
             });
 
@@ -23,7 +23,7 @@ describe('cookies', function () {
             };
 
             request({
-                url: app.$remote('/cookies'),
+                url: app.$remote('/'),
                 cookies: cookies
             }, function (err, body) {
                 expect(body).toEqual('a=1');

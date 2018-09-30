@@ -52,7 +52,8 @@
     "chai-jasmine": "^1.0.7",
     "express": "^4.16.3",
     "istanbul": "^0.4.5",
-    "mocha": "^2.5.3"
+    "mocha": "^2.5.3",
+    "multer": "^1.4.0"
   },
   "license": "MIT"
 }
