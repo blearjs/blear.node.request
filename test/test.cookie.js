@@ -9,7 +9,7 @@ var expect = require('chai-jasmine').expect;
 var server = require('./sever');
 var request = require('../src/index');
 
-describe('cookies', function () {
+describe('cookie', function () {
 
     it('get', function (done) {
         server(done, function (app, stop) {
@@ -39,22 +39,21 @@ describe('cookies', function () {
 
             app.get('/', function (req, res) {
                 res.cookie('b', 2);
-                res.send(req.headers.cookie);
+                res.cookie('c', 3);
+                res.send('ok');
             });
 
-            var cookies = {
-                a: 1
-            };
-
             request({
-                url: app.$remote('/'),
-                cookies: cookies
+                url: app.$remote('/')
             }, function (err, body, res) {
-                expect(body).toEqual('a=1');
-                expect(res.cookies.length).toBe(1);
+                expect(body).toEqual('ok');
+                expect(res.cookies.length).toBe(2);
                 expect(res.cookies[0].key).toBe('b');
                 expect(res.cookies[0].val).toBe('2');
                 expect(res.cookies[0].path).toBe('/');
+                expect(res.cookies[1].key).toBe('c');
+                expect(res.cookies[1].val).toBe('3');
+                expect(res.cookies[1].path).toBe('/');
                 stop();
             });
 
