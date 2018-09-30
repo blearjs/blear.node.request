@@ -65,7 +65,6 @@ function request(options, callback) {
 
     options = object.assign({}, defaults, options);
     options.method = options.method.toUpperCase();
-    options.qs = options.query;
 
     if (typeis.Object(options.browser)) {
         options.headers = object.assign({}, {
@@ -86,15 +85,20 @@ function request(options, callback) {
         options.headers.cookie += cookies.join(';');
     }
 
-    if (typeis.Object(options.json)) {
-        options.body = JSON.stringify(options.json);
-    }
-    // compact
-    else if (typeis.Object(options.body)) {
-        options.body = JSON.stringify(options.body);
-    }
+    var json = options.json;
+    var body = options.body;
 
     options.json = false;
+    if (typeis.Object(json)) {
+        options.body = json;
+        options.json = true;
+    }
+    // compact
+    else if (typeis.Object(body)) {
+        options.body = JSON.stringify(options.body);
+        options.json = true;
+    }
+
     if (options.encoding === 'binary') {
         options.encoding = null;
         options.callback = fun.ensure(callback);
@@ -143,7 +147,47 @@ function request(options, callback) {
         };
     }
 
-    return new Request(options);
+    // https://www.npmjs.com/package/request#requestoptions-callback
+    return new Request({
+        // object containing querystring values to be appended to the uri
+        qs: options.query,
+        // useQuerystring - if true, use querystring to stringify and parse querystrings,
+        // otherwise use qs (default: false). Set this option to true if you need arrays to be serialized as
+        // foo=bar&foo=baz instead of the default foo[0]=bar&foo[1]=baz.
+        useQuerystring: true,
+        body: options.body,
+        json: options.json,
+        form: options.form,
+        formData: options.formData,
+        headers: options.headers,
+        url: options.url,
+        // an HTTP proxy to be used. Supports proxy Auth with Basic Auth,
+        // identical to support for the url parameter
+        // (by embedding the auth info in the uri)
+        proxy: options.proxy,
+        method: options.method,
+        encoding: options.encoding,
+        // follow HTTP 3xx responses as redirects (default: true).
+        // This property can also be implemented as function which gets response
+        // object as a single argument and should return true if redirects
+        // should continue or false otherwise.
+        followRedirect: true,
+        // the maximum number of redirects to follow (default: 10)
+        maxRedirects: options.maxRedirects,
+        timeout: options.timeout,
+        strictSSL: options.strictSSL,
+        // if true, add an Accept-Encoding header to request compressed content encodings
+        // from the server (if not already present) and decode supported content encodings
+        // in the response. Note: Automatic decoding of the response content is performed
+        // on the body data returned through request (both through the request stream and
+        // passed to the callback function) but is not performed on the response stream
+        // (available from the response event) which is the unmodified http.IncomingMessage
+        // object which may contain compressed data
+        gzip: true,
+        // if true, the request-response cycle (including all redirects) is timed at millisecond resolution.
+        // When set, the following properties are added to the response object:
+        time: true
+    });
 }
 
 request.defaults = defaults;

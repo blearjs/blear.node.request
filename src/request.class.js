@@ -102,14 +102,8 @@ var Request = Class.ify(kernel.Request).extend({
             debugInfo('response body', body);
         });
 
-        // 支持 gzip
-        the.gzip = true;
         the.href = requestedList[requestedList.length - 1];
         the.requestedList = requestedList;
-        // useQuerystring - if true, use querystring to stringify and parse querystrings,
-        // otherwise use qs (default: false). Set this option to true if you need arrays to be serialized as
-        // foo=bar&foo=baz instead of the default foo[0]=bar&foo[1]=baz.
-        options.useQuerystring = true;
         Request.parent(the, options);
     }
 });
