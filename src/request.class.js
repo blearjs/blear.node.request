@@ -14,8 +14,7 @@ var console = require('blear.node.console');
 var debug = require('blear.node.debug');
 var Class = require('blear.classes.class');
 var typeis = require('blear.utils.typeis');
-
-var pkg = require('../package.json');
+var object = require('blear.utils.object');
 
 var Request = Class.ify(kernel.Request).extend({
     constructor: function (options) {
@@ -107,6 +106,8 @@ var Request = Class.ify(kernel.Request).extend({
         Request.parent(the, options);
     }
 });
+
+module.exports = Request;
 
 // =================================================
 // =================================================

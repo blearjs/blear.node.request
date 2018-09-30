@@ -14,6 +14,7 @@ var typeis = require('blear.utils.typeis');
 var fun = require('blear.utils.function');
 
 var Request = require('./request.class');
+var pkg = require('../package.json');
 
 var defaults = {
     // url 查询参数
