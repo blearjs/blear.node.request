@@ -59,13 +59,13 @@ describe('body', function () {
         });
     });
 
-
-    it('formData', function (done) {
+    it('formData text', function (done) {
         server(done, function (app, stop) {
 
-            app.post('/', function (req, res) {
-                expect(req.headers['content-type']).toEqual('application/x-www-form-urlencoded');
-                res.send(JSON.stringify(req.body));
+            app.post('/', app.$upload.none(), function (req, res) {
+                expect(req.headers['content-type']).toMatch(/^multipart\/form-data;/);
+                expect(req.body.a).toEqual('1');
+                res.send('ok');
             });
 
             var formData = {
@@ -77,7 +77,45 @@ describe('body', function () {
                 formData: formData,
                 method: 'post'
             }, function (err, body) {
-                expect(body).toEqual('{"a":"1"}');
+                expect(body).toEqual('ok');
+                stop();
+            });
+
+        });
+    });
+
+    it('formData file', function (done) {
+        server(done, function (app, stop) {
+            var fs = require('fs');
+            var path = require('path');
+
+            app.post('/', app.$upload.single('b'), function (req, res) {
+                expect(req.headers['content-type']).toMatch(/^multipart\/form-data;/);
+                expect(req.file.mimetype).toEqual('text/plain');
+                expect(req.file.originalname).toEqual('b.txt');
+                expect(req.file.size).toBeGreaterThan(1);
+                fs.statSync(req.file.path);
+                fs.unlinkSync(req.file.path);
+                res.send('ok');
+            });
+
+            var formData = {
+                a: 1,
+                b: {
+                    value: fs.createReadStream(path.join(__dirname, 'mocha.opts')),
+                    options: {
+                        filename: 'b.txt',
+                        contentType: 'text/plain'
+                    }
+                }
+            };
+
+            request({
+                url: app.$remote('/'),
+                formData: formData,
+                method: 'post'
+            }, function (err, body) {
+                expect(body).toEqual('ok');
                 stop();
             });
 

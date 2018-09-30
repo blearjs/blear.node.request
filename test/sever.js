@@ -28,7 +28,6 @@ module.exports = function (done, callback) {
 
     app.use(express.json());
     app.use(express.urlencoded());
-    app.use(upload.none());
 
     server.listen(0, function (err) {
         if (err) {
@@ -37,6 +36,7 @@ module.exports = function (done, callback) {
 
         var port = this.address().port;
 
+        app.$upload = upload;
         app.$remote = function (pathname) {
             return 'http://localhost:' + port + pathname;
         };
