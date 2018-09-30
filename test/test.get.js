@@ -9,9 +9,9 @@ var expect = require('chai-jasmine').expect;
 var server = require('./sever');
 var request = require('../src/index');
 
-describe('basic', function () {
+describe('get', function () {
 
-    it('main', function (done) {
+    it('basic', function (done) {
         server(done, function (app, stop) {
 
             app.get('/', function (req, res) {
@@ -22,6 +22,135 @@ describe('basic', function () {
                 url: app.$remote('/')
             }, function (err, body) {
                 expect(body).toEqual('ok');
+                stop();
+            });
+
+        });
+    });
+
+    it('browser = false', function (done) {
+        server(done, function (app, stop) {
+
+            app.get('/', function (req, res) {
+                expect(req.headers['user-agent']).toBe(undefined);
+                expect(req.headers['host']).toMatch(/localhost/);
+                expect(req.headers['origin']).toBe(undefined);
+                expect(req.headers['referer']).toBe(undefined);
+                res.send('ok');
+            });
+
+            request({
+                url: app.$remote('/'),
+                browser: false
+            }, function (err, body) {
+                expect(body).toEqual('ok');
+                stop();
+            });
+
+        });
+    });
+
+    it('browser = default', function (done) {
+        server(done, function (app, stop) {
+
+            app.get('/', function (req, res) {
+                expect(req.headers['user-agent']).toMatch(/iphone/i);
+                expect(req.headers['host']).toMatch(/localhost/);
+                expect(req.headers['origin']).toMatch(/localhost/);
+                expect(req.headers['referer']).toMatch(/localhost/);
+                res.send('ok');
+            });
+
+            request({
+                url: app.$remote('/')
+            }, function (err, body) {
+                expect(body).toEqual('ok');
+                stop();
+            });
+
+        });
+    });
+
+    it('browser = specify', function (done) {
+        server(done, function (app, stop) {
+
+            app.get('/', function (req, res) {
+                expect(req.headers['user-agent']).toEqual('a');
+                expect(req.headers['host']).toEqual('b');
+                expect(req.headers['origin']).toEqual('c');
+                expect(req.headers['referer']).toEqual('d');
+                res.send('ok');
+            });
+
+            request({
+                url: app.$remote('/'),
+                browser: {
+                    'user-agent': 'a',
+                    'host': 'b',
+                    'origin': 'c',
+                    'referer': 'd'
+                }
+            }, function (err, body) {
+                expect(body).toEqual('ok');
+                stop();
+            });
+
+        });
+    });
+
+    it('query + debug', function (done) {
+        server(done, function (app, stop) {
+
+            app.get('/', function (req, res) {
+                expect(req.query.a).toEqual('1');
+                expect(req.query.b).toEqual('2');
+                res.send('ok');
+            });
+
+            request({
+                url: app.$remote('/'),
+                query: {
+                    a: 1,
+                    b: 2
+                },
+                debug: true
+            }, function (err, body) {
+                expect(body).toEqual('ok');
+                stop();
+            });
+
+        });
+    });
+
+    it('binary', function (done) {
+        server(done, function (app, stop) {
+
+            app.get('/', function (req, res) {
+                res.send('ok');
+            });
+
+            request({
+                url: app.$remote('/'),
+                encoding: 'binary'
+            }, function (err, buffer) {
+                expect(Buffer.isBuffer(buffer)).toBe(true);
+                stop();
+            });
+
+        });
+    });
+
+    it('error', function (done) {
+        server(done, function (app, stop) {
+
+            app.get('/', function (req, res) {
+                res.send('ok');
+            });
+
+            request({
+                url: 'http://not-found-server-' + Date.now() + '.com'
+            }, function (err) {
+                expect(err).toBeTruthy();
                 stop();
             });
 

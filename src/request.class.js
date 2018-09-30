@@ -17,7 +17,7 @@ var typeis = require('blear.utils.typeis');
 var object = require('blear.utils.object');
 
 var Request = Class.ify(kernel.Request).extend({
-    constructor: function (options) {
+    constructor: function (options, beforeRequest) {
         var the = this;
         the.httpModules = {
             'http:': overideHttpModule(the, http),
@@ -42,35 +42,12 @@ var Request = Class.ify(kernel.Request).extend({
             debug.info(event, val);
         };
 
-        the.on('beforeRequest', function (req) {
-            if (!typeis.Object(options.browser)) {
-                return;
-            }
-
-            if (options.browser.host === true) {
-                the.setHeader('host', the.uri.host);
-            } else if (typeis.String(options.browser.host)) {
-                the.setHeader('host', options.browser.host);
-            }
-
-            if (options.browser.origin === true) {
-                the.setHeader('origin', the.uri.protocol + '//' + the.uri.host);
-            } else if (typeis.String(options.browser.origin)) {
-                the.setHeader('origin', options.browser.origin);
-            }
-
-            if (options.browser.referer === true) {
-                the.setHeader('referer', the.uri.href);
-            } else if (typeis.String(options.browser.referer)) {
-                the.setHeader('referer', options.browser.referer);
-            }
-        });
 
         the.on('request', function (req) {
             requestedList.push(the.href);
             debugHead(the.method, the.href);
             debugInfo('request headers', the.headers);
-            debugInfo('request query', options.query);
+            debugInfo('request query', options.qs);
 
             if (options.body) {
                 debugInfo('request body', options.body);

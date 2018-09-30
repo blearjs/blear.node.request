@@ -147,7 +147,7 @@ function request(options, callback) {
     }
 
     // https://www.npmjs.com/package/request#requestoptions-callback
-    return new Request({
+    var req = new Request({
         // object containing querystring values to be appended to the uri
         qs: options.query,
         // useQuerystring - if true, use querystring to stringify and parse querystrings,
@@ -188,8 +188,37 @@ function request(options, callback) {
         gzip: true,
         // if true, the request-response cycle (including all redirects) is timed at millisecond resolution.
         // When set, the following properties are added to the response object:
-        time: true
+        time: true,
+        debug: options.debug
     });
+
+    req.on('beforeRequest', function () {
+        var browser = options.browser;
+
+        if (!typeis.Object(browser)) {
+            return;
+        }
+
+        if (browser.host === true) {
+            req.setHeader('host', req.uri.host);
+        } else if (typeis.String(browser.host)) {
+            req.setHeader('host', browser.host);
+        }
+
+        if (browser.origin === true) {
+            req.setHeader('origin', req.uri.protocol + '//' + req.uri.host);
+        } else if (typeis.String(browser.origin)) {
+            req.setHeader('origin', browser.origin);
+        }
+
+        if (browser.referer === true) {
+            req.setHeader('referer', req.uri.href);
+        } else if (typeis.String(browser.referer)) {
+            req.setHeader('referer', browser.referer);
+        }
+    });
+
+    return req;
 }
 
 request.defaults = defaults;
