@@ -64,6 +64,7 @@ var defaults = {
 function request(options, callback) {
     var args = access.args(arguments);
 
+    options.browser = object.assign({}, defaults.browser, options.browser);
     options = object.assign({}, defaults, options);
     options.method = options.method.toUpperCase();
 
