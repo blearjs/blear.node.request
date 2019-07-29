@@ -41,13 +41,14 @@ var defaults = {
     timeout: 15000,
     // 是否模拟浏览器
     browser: {
-        accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        accept: ' text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'accept-encoding': 'gzip',
-        'accept-language': 'zh-CN,zh;q=0.8,en;q=0.6',
-        'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 7_0 like Mac OS X; en-us) ' +
-            'AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53 ' +
+        'accept-language': 'zh-cn',
+        'user-agent': ' Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/605.1.15 ' +
+            '(KHTML, like Gecko) Version/12.1.1 Safari/605.1.15 ' +
             pkg.name + '/' + pkg.version,
         'cache-control': 'no-cache',
+        'pragma': 'no-cache',
         host: true,
         origin: true,
         // 经典错误，应为 referrer
