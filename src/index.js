@@ -79,7 +79,8 @@ function request(options, callback) {
             'accept-encoding': options.browser['accept-encoding'],
             'accept-language': options.browser['accept-language'],
             'user-agent': options.browser['user-agent'],
-            'cache-control': options.browser['cache-control']
+            'cache-control': options.browser['cache-control'],
+            'pragma': options.browser['pragma']
         }, options.headers);
     }
 
